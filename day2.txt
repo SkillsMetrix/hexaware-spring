@@ -1,0 +1,103 @@
+package com.example.rest_app_day1;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+@RequestMapping("/mainapp")
+public class RestApp {
+	
+ 
+  
+  @Autowired
+  private UserService service;
+
+	
+	@RequestMapping(method = RequestMethod.POST,path = "/login")
+	@ResponseBody
+	public String login(@RequestBody Users users) {
+		if(service.loginUser(users)) {
+			return "login success";
+		}
+		return "login failed";
+	}
+	@RequestMapping(method = RequestMethod.POST,path = "/register")
+	@ResponseBody
+	public String register(@RequestBody Users users) {
+		 service.registerUser(users);
+		
+		
+		return "Welcome to register";
+	}
+	@RequestMapping(method = RequestMethod.GET,path = "/loadusers")
+	@ResponseBody
+	public List<Users> loadUsers(){
+		return service.loadUsers();
+	}
+}
+
+
+
+------------
+
+package com.example.rest_app_day1;
+
+import java.util.List;
+
+public interface UserService {
+	
+	public void registerUser(Users users);
+	public boolean loginUser(Users users);
+	public List<Users> loadUsers();
+	
+
+}
+
+
+--------
+
+package com.example.rest_app_day1;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserServiceImpl implements UserService{
+	
+	 List<Users> userList= new ArrayList<Users>();
+
+	@Override
+	public void registerUser(Users users) {
+		userList.add(users);
+		System.out.println(userList);
+		 
+		
+	}
+
+	@Override
+	public boolean loginUser(Users users) {
+		for( Users user: userList) {
+			if(user.getUsername().equals(users.getUsername())) {
+				return true;
+			}
+		
+	}
+		return false;
+
+}
+
+	@Override
+	public List<Users> loadUsers() {
+		// TODO Auto-generated method stub
+		return userList;
+	}}
