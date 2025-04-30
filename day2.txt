@@ -52,8 +52,18 @@ public class RestApp {
 		return  "username is not found";
 	}
 	
+	@RequestMapping(method = RequestMethod.DELETE,path = "/deleteuser/{name}")
+	@ResponseBody
+	public String deleteUser(@PathVariable("name")String uname) {
+		if(service.deleteUser(uname)) {
+			return uname + " is found and deleted";
+		}
+		return  "username is not found";
+	}
+	
 }
 ----
+
 package com.example.rest_app_day1;
 
 import java.util.List;
@@ -64,10 +74,14 @@ public interface UserService {
 	public boolean loginUser(Users users);
 	public List<Users> loadUsers();
 	public boolean findUser(String name);
+	public boolean deleteUser(String name);
 	
 
 }
----
+
+
+--------
+
 
 package com.example.rest_app_day1;
 
@@ -79,7 +93,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-	List<Users> userList = new ArrayList<Users>();
+	static List<Users> userList = new ArrayList<Users>();
+
+	static {
+		userList.add(new Users("admin", "admin@mail.com", "pass123", "NY"));
+		userList.add(new Users("manager", "manager@mail.com", "pass123", "MEL"));
+	}
 
 	@Override
 	public void registerUser(Users users) {
@@ -115,6 +134,20 @@ public class UserServiceImpl implements UserService {
 			}
 
 		}
+		return false;
+	}
+
+	@Override
+	public boolean deleteUser(String name) {
+		for (Users user : userList) {
+
+			boolean found = userList.removeIf(us -> user.getUsername().equals(name));
+			if (found) {
+				return true;
+			}
+
+		}
+
 		return false;
 	}
 }
