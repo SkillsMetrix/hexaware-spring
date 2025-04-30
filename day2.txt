@@ -61,8 +61,16 @@ public class RestApp {
 		return  "username is not found";
 	}
 	
+	@RequestMapping(method = RequestMethod.PUT,path = "/updateuser/{name}")
+	@ResponseBody
+	public String findUser(@PathVariable("name")String uname,@RequestBody Users users) {
+	
+		service.updateUser(uname, users);
+		return "User Updated...!";
+	}
+	
 }
-----
+--------
 
 package com.example.rest_app_day1;
 
@@ -75,12 +83,11 @@ public interface UserService {
 	public List<Users> loadUsers();
 	public boolean findUser(String name);
 	public boolean deleteUser(String name);
+	public void updateUser(String name,Users users);
 	
 
 }
-
-
---------
+------
 
 
 package com.example.rest_app_day1;
@@ -149,5 +156,12 @@ public class UserServiceImpl implements UserService {
 		}
 
 		return false;
+	}
+
+	@Override
+	public void updateUser(String name,Users users) {
+		
+		System.out.println(users);
+		System.out.println(name);
 	}
 }
