@@ -2,6 +2,7 @@ package com.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,7 +17,9 @@ public class AppSecurity {
 	}
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity security)throws Exception{
-		security.authorizeHttpRequests(auth ->auth.anyRequest().permitAll());
+		security.authorizeHttpRequests(auth ->auth
+		.requestMatchers(HttpMethod.POST,"/register","/login").permitAll()
+		.requestMatchers(HttpMethod.GET,"/login","/register").permitAll());
 		return security.build();
 	}
 
