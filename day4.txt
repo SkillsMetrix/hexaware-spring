@@ -1,106 +1,23 @@
-package com.service;
+package com.security;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
-
-import com.model.Users;
-import com.repo.AppRepo;
-
-@Service
-public class UserServiceImpl implements UserService {
-
-	@Autowired
-	private AppRepo repo;
-
-	static List<Users> userList = new ArrayList<Users>();
-
-	static {
-		userList.add(new Users("admin", "admin@mail.com", "pass123", "NY"));
-		userList.add(new Users("manager", "manager@mail.com", "pass123", "MEL"));
+@Configuration
+@EnableWebSecurity
+public class AppSecurity {
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
-
-	@Override
-	public void registerUser(Users users) {
-		repo.save(users);
-
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity security)throws Exception{
+		security.authorizeHttpRequests(auth ->auth.anyRequest().permitAll());
+		return security.build();
 	}
-
-	@Override
-	public boolean loginUser(Users users) {
-		for (Users user : userList) {
-			if (user.getUsername().equals(users.getUsername())) {
-				return true;
-			}
-
-		}
-		return false;
-
-	}
-
-	@Override
-	public List<Users> loadUsers() {
-		// TODO Auto-generated method stub
-		return repo.findAll();
-	}
-
-	@Override
-	public boolean findUser(String name) {
-
-		Optional findUser = repo.findById(name);
-		if (findUser.isEmpty()) {
-			return false;
-		}
-		return true;
-
-	}
-
-	@Override
-	public boolean deleteUser(String name) {
-		Optional<?>user= Optional.of(findUser(name));
-		if(user.isPresent()) {
-			repo.deleteById(name);
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public void updateUser(String name, Users users) {
-		int updatedRows=repo.updateUserById(name, users.getUsername(), users.getPassword(), users.getCity());
-		if(updatedRows ==0) {
-			throw new RuntimeException("User not Found");
-		}
-		
-		
-	}
-}
-----
-
-package com.repo;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.model.Users;
-
-@Repository
-public interface AppRepo extends JpaRepository<Users, String> {
-	
-	@Modifying
-	@Transactional
-	@Query("UPDATE Users u SET u.username=:username,u.password=:password,u.city=:city WHERE u.email=:email" )
-	int updateUserById(@Param("email") String email,@Param("username") String username,
-			@Param("password") String password, @Param("city") String city
-
-	);
 
 }
