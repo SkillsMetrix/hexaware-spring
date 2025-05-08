@@ -1,103 +1,30 @@
 package com.security;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.stereotype.Component;
 
-@Configuration
-@EnableWebSecurity
-public class AppSecurity {
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+@Component
+public class JwtUtil {
+	private final String JWT_SECRET="mysecretkey";
 	
-
-	@Bean
-	public InMemoryUserDetailsManager configAuth() {
-		List<UserDetails> users= new ArrayList<UserDetails>();
-		//for admin
-		List<GrantedAuthority> authorities= new ArrayList<GrantedAuthority>();
-		authorities.add(new SimpleGrantedAuthority("ADMIN"));
-		UserDetails admin= new User("admin", "{noop}admin123", authorities);
-		users.add(admin);
-		
-		// for manager
-		List<GrantedAuthority> authorities2= new ArrayList<GrantedAuthority>();
-		authorities2.add(new SimpleGrantedAuthority("MANAGER"));
-		UserDetails manager= new User("manager", "{noop}manager123", authorities2);
-		users.add(manager);
-		return new InMemoryUserDetailsManager(users);
-		
+	public String generateToken(String username) {
+		return Jwts.builder()
+				.setSubject(username)
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis()+ 1000*60*60))
+				.signWith(SignatureAlgorithm.HS256, JWT_SECRET)
+				.compact();
 	}
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity security)throws Exception{
-		security.csrf(csrf -> csrf.disable())
-	     .authorizeHttpRequests(auth ->auth
-		.requestMatchers(HttpMethod.POST,"/register","/login").permitAll()
-		.requestMatchers(HttpMethod.GET,"/login","/register").permitAll()
-		.requestMatchers("/welcome").authenticated()
-		.requestMatchers("/admin").hasAuthority("ADMIN")
-		.anyRequest().authenticated())
-	     .formLogin(formLogin -> formLogin.defaultSuccessUrl("/welcome",true));
-	
-	    return security.build();
+	public String extractUserName(String token) {
+		return Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody().getSubject();
+	}
+	public boolean validateToken(String token,UserDetails userDetails) {
+		String username=extractUserName(token);
+		return username.equals(userDetails.getUsername());
 	}
 
 }
-
------
-
-
-package com.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-
-@Controller
-public class SecurityController {
-	
-	@GetMapping("/admin")
-	public String admin() {
-		return "admin";
-	}
-	@GetMapping("/welcome")
-	public String welcome() {
-		return "welcome";
-	}
-
-}
-----
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-</head>
-<body>
-Welcome to Admin
-</body>
-</html>
-
-
-------------
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-</head>
-<body>
-Welcome to Landing Page
-</body>
-</html>
