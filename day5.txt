@@ -19,10 +19,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class AppSecurity {
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+	
+	/*
+	 * @Bean public BCryptPasswordEncoder passwordEncoder() { return new
+	 * BCryptPasswordEncoder(); }
+	 */
 	@Bean
 	public InMemoryUserDetailsManager configAuth() {
 		List<UserDetails> users= new ArrayList<UserDetails>();
@@ -46,9 +47,10 @@ public class AppSecurity {
 	     .authorizeHttpRequests(auth ->auth
 		.requestMatchers(HttpMethod.POST,"/register","/login").permitAll()
 		.requestMatchers(HttpMethod.GET,"/login","/register").permitAll()
-		.requestMatchers("/loadusers").hasAuthority("MANAGER")
+		.requestMatchers("/welcome").authenticated()
+		.requestMatchers("/admin").hasAuthority("ADMIN")
 		.anyRequest().authenticated())
-	     .formLogin(formLogin -> formLogin.defaultSuccessUrl("/login",true));
+	     .formLogin(formLogin -> formLogin.defaultSuccessUrl("/welcome",true));
 	
 	    
 	    
@@ -57,3 +59,50 @@ public class AppSecurity {
 	}
 
 }
+-----
+
+
+package com.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class SecurityController {
+	
+	@GetMapping("/admin")
+	public String admin() {
+		return "admin";
+	}
+	@GetMapping("/welcome")
+	public String welcome() {
+		return "welcome";
+	}
+
+}
+----
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+Welcome to Admin
+</body>
+</html>
+
+
+------------
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+Welcome to Landing Page
+</body>
+</html>
