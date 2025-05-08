@@ -20,10 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class AppSecurity {
 	
-	/*
-	 * @Bean public BCryptPasswordEncoder passwordEncoder() { return new
-	 * BCryptPasswordEncoder(); }
-	 */
+
 	@Bean
 	public InMemoryUserDetailsManager configAuth() {
 		List<UserDetails> users= new ArrayList<UserDetails>();
@@ -52,13 +49,11 @@ public class AppSecurity {
 		.anyRequest().authenticated())
 	     .formLogin(formLogin -> formLogin.defaultSuccessUrl("/welcome",true));
 	
-	    
-	    
-	     
-		return security.build();
+	    return security.build();
 	}
 
 }
+
 -----
 
 
