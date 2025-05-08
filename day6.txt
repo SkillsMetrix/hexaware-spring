@@ -1,54 +1,25 @@
 package com.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import java.util.ArrayList;
 
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CustomUserDetailsService  implements UserDetailsService{
 	
 	@Autowired
-	private JwtFilter jwtFilter;
-	@Bean
-	private PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+	private UserRepository repository;
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		 User user= repository.findByUsername(username)
+				 .orElseThrow(()-> new UsernameNotFoundException("User not found"));
+		return new org.springframework.security.core.userdetails.
+				User(user.getUsername(),user.getPassword(),new ArrayList<>());
 	}
-	
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity security)throws Exception{
-		security.csrf(csrf -> csrf.disable())
-		.authorizeHttpRequests()
-		.requestMatchers("/auth/**").permitAll()
-		.anyRequest().authenticated()
-		.and()
-		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		security.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-		return security.build();
-		
-	}
-	@Bean
-	public AuthenticationManager authManager(HttpSecurity http,PasswordEncoder encoder,UserDetailsService userDetailsService) throws Exception{
-		return http.getSharedObject(AuthenticationManagerBuilder.class)
-				.userDetailsService(userDetailsService)
-				.passwordEncoder(encoder)
-				.and()
-				.build();
-		
-	}
-	
-	
-	
-	
 
 }
