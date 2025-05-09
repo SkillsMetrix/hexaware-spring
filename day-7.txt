@@ -1,0 +1,81 @@
+package com.java.employees.services;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.java.employees.dao.EmployeeRepository;
+import com.java.employees.model.Employee;
+
+ 
+@ExtendWith(MockitoExtension.class)
+public class ServiceTest {
+
+	@InjectMocks
+	EmployeeService employeeService;
+	@Mock
+	EmployeeRepository repository;
+	
+	public void init() {
+		MockitoAnnotations.openMocks(this);
+	}
+	@Test
+	public void testFindEmp() {
+		List<Employee> list= new ArrayList<Employee>();
+		list.add(new Employee("alex", "alex"));
+		list.add(new Employee("sam", "sam"));
+		list.add(new Employee("steve", "steve"));
+		Mockito.when(repository.findAll()).thenReturn(list);
+		List<Employee>emplist=employeeService.findAll();
+		assertEquals(3, emplist.size());
+	}
+	@Test
+	public void testCreate() {
+		Employee emp= new Employee("alex", "alex");
+		employeeService.save(emp);
+		Mockito.verify(repository,Mockito.times(1)).save(emp);
+	}
+	
+	
+	
+}
+----
+
+package com.java.employees.dao;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import com.java.employees.model.Employee;
+
+@ExtendWith(SpringExtension.class)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class DaoTest {
+	@Autowired
+	EmployeeRepository repository;
+	@Test
+	public void testCreate() {
+		Employee employee= new Employee("admin", "manager");
+		repository.save(employee);
+		Iterable<Employee> itr= repository.findAll();
+		Assertions.assertThat(itr).extracting(e-> e.getFirstName()).containsOnly("admin");
+		repository.deleteAll();
+		Assertions.assertThat(repository.findAll()).isEmpty();
+	}
+
+}
