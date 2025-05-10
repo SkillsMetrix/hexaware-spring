@@ -1,3 +1,130 @@
+package com.entity;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class CartEntity {
+
+    @Id
+    private Long userId;
+    private Long cartId;
+    private Integer totalItems;
+    private Double totalCosts;
+    private String products;
+
+    // No-args constructor
+    public CartEntity() {
+    }
+
+    // All-args constructor
+    public CartEntity(Long userId, Long cartId, Integer totalItems, Double totalCosts, String products) {
+        this.userId = userId;
+        this.cartId = cartId;
+        this.totalItems = totalItems;
+        this.totalCosts = totalCosts;
+        this.products = products;
+    }
+
+    // Getters and Setters
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getCartId() {
+        return cartId;
+    }
+
+    public void setCartId(Long cartId) {
+        this.cartId = cartId;
+    }
+
+    public Integer getTotalItems() {
+        return totalItems;
+    }
+
+    public void setTotalItems(Integer totalItems) {
+        this.totalItems = totalItems;
+    }
+
+    public Double getTotalCosts() {
+        return totalCosts;
+    }
+
+    public void setTotalCosts(Double totalCosts) {
+        this.totalCosts = totalCosts;
+    }
+
+    public String getProducts() {
+        return products;
+    }
+
+    public void setProducts(String products) {
+        this.products = products;
+    }
+
+    // toString method
+    @Override
+    public String toString() {
+        return "CartEntity{" +
+                "userId=" + userId +
+                ", cartId=" + cartId +
+                ", totalItems=" + totalItems +
+                ", totalCosts=" + totalCosts +
+                ", products='" + products + '\'' +
+                '}';
+    }
+
+    // Builder
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private Long userId;
+        private Long cartId;
+        private Integer totalItems;
+        private Double totalCosts;
+        private String products;
+
+        public Builder userId(Long userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Builder cartId(Long cartId) {
+            this.cartId = cartId;
+            return this;
+        }
+
+        public Builder totalItems(Integer totalItems) {
+            this.totalItems = totalItems;
+            return this;
+        }
+
+        public Builder totalCosts(Double totalCosts) {
+            this.totalCosts = totalCosts;
+            return this;
+        }
+
+        public Builder products(String products) {
+            this.products = products;
+            return this;
+        }
+
+        public CartEntity build() {
+            return new CartEntity(userId, cartId, totalItems, totalCosts, products);
+        }
+    }
+}
+
+
+----
+
 public class Product {
 
     private Long productId;
