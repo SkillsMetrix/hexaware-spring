@@ -1,0 +1,99 @@
+public class Product {
+
+    private Long productId;
+    private String productName;
+    private int quantity;
+    private Double price;
+
+    // No-args constructor
+    public Product() {
+    }
+
+    // All-args constructor
+    public Product(Long productId, String productName, int quantity, Double price) {
+        this.productId = productId;
+        this.productName = productName;
+        this.quantity = quantity;
+        this.price = price;
+    }
+
+    // Getters and Setters
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    // toString method
+    @Override
+    public String toString() {
+        return "Product{" +
+                "productId=" + productId +
+                ", productName='" + productName + '\'' +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                '}';
+    }
+
+    // Builder pattern
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private Long productId;
+        private String productName;
+        private int quantity;
+        private Double price;
+
+        public Builder productId(Long productId) {
+            this.productId = productId;
+            return this;
+        }
+
+        public Builder productName(String productName) {
+            this.productName = productName;
+            return this;
+        }
+
+        public Builder quantity(int quantity) {
+            this.quantity = quantity;
+            return this;
+        }
+
+        public Builder price(Double price) {
+            this.price = price;
+            return this;
+        }
+
+        public Product build() {
+            return new Product(productId, productName, quantity, price);
+        }
+    }
+}
