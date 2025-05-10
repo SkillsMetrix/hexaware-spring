@@ -68,27 +68,25 @@ public class ShopService {
 				.build();
 		
 	}
-	public List<ShoppingCartResponse> getShoppingCart(Long userid){
-		ObjectMapper mapper= new ObjectMapper();
-		List<CartEntity> cartEntities= repo.findByUserId(userid);
-		List<ShoppingCartResponse> cartResponse= cartEntities.stream()
-				.map(ce -> {
-					try {
-						return ShoppingCartResponse.builder()
-								.cartId(ce.getCartId())
-								.userId(ce.getUserId())
-								.totalItems(ce.getTotalItems())
-								.totalCosts(ce.getTotalCosts())
-								.products(mapper.readValue(ce.getProducts(),List.class))
-								.build();
-					}catch (Exception e) {
-						
-					}
-					
-				}).collect(Collectors.toList());
-		return cartResponse;
-	}
-	
+	public List<ShoppingCartResponse> getShoppingCart(Long userId) {
+        ObjectMapper mapper = new ObjectMapper();
+        List<CartEntity> cartEntities = cartRepository.findByUserId(userId);
+        List<ShoppingCartResponse> cartResponse = cartEntities.stream()
+                .map(ce -> {
+                    try {
+                        return ShoppingCartResponse.builder()
+                                .cartId(ce.getCartId())
+                                .userId(ce.getUserId())
+                                .totalItems(ce.getTotalItems())
+                                .totalCost(ce.getTotalCost())
+                                .products(mapper.readValue(ce.getProducts(), List.class))
+                                .build();
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).collect(Collectors.toList());
+        return cartResponse;
+    }
 }
 ----
 
