@@ -10,7 +10,7 @@ spring:
         - id: productServiceRoute
           predicates:
             - Path=/products/**
-          uri:  lb://product-service
+          uri:  lb://product-ms
 eureka:
   client:
     service-url:
