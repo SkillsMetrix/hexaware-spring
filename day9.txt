@@ -1,17 +1,8 @@
-server:
-  port: 8888
-spring:
-  application:
-    name: gateway
-
-  cloud:
-    gateway:
-      routes:
-        - id: productServiceRoute
-          predicates:
-            - Path=/products/**
-          uri:  lb://product-ms
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:7777/eureka
+spring.application.name=configserver
+server.port=8012
+spring.profile.active=git
+spring.cloud.config.server.git.uri=https://github.com/SkillsMetrix/config-server
+spring.cloud.config.server.git.username=connect@skillsmetrix.com
+spring.cloud.config.server.git.password=
+spring.cloud.config.server.git.clone-on-start=true
+spring.cloud.config.server.git.default-label=main
