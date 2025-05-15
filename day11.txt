@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: springboot-app
+  labels:
+    name: springboot
+spec:
+  containers:
+  - name: springboot-container
+    image: cammey20/spring-app
+    ports:
+      - containerPort: 8090
