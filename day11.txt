@@ -10,3 +10,18 @@ spec:
     image: cammey20/spring-app
     ports:
       - containerPort: 8090
+
+
+----------
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sb-service
+spec:
+  selector:
+    name: springboot
+  ports:
+  - port: 8090
+    targetPort: 8090
+    nodePort: 30036
